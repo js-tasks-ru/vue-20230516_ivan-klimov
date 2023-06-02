@@ -23,11 +23,6 @@ export default defineComponent({
   data() {
     return {
       meetup: null,
-      fetchState: {
-        load: true,
-        succes: false,
-        error: false,
-      },
     };
   },
 
@@ -36,21 +31,13 @@ export default defineComponent({
       immediate: true,
 
       handler() {
-        this.fetchState.succes = false;
-        this.fetchState.load = true;
-        this.fetchState.error = false;
         this.meetup = 'Загрузка...';
 
         fetchMeetupById(this.meetupId).then(
           (result) => {
-            this.fetchState.load = false;
-            this.fetchState.succes = true;
             this.meetup = result;
           },
           (error) => {
-            this.fetchState.load = false;
-            this.fetchState.succes = false;
-            this.fetchState.error = true;
             this.meetup = error.message;
           }
         );
@@ -61,13 +48,9 @@ export default defineComponent({
   template: `
     <div class="page-meetup">
       <!-- meetup view -->
-      <MeetupView v-if="fetchState.succes" :meetup="meetup"/>
+      <MeetupView v-if="typeof meetup === 'object'" :meetup="meetup"/>
 
-      <UiContainer v-if="fetchState.load">
-        <UiAlert>{{ meetup }}</UiAlert>
-      </UiContainer>
-
-      <UiContainer v-if="fetchState.error">
+      <UiContainer v-else>
         <UiAlert>{{ meetup }}</UiAlert>
       </UiContainer>
     </div>`,
