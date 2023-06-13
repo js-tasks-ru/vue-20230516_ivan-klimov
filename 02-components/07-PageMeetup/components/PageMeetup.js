@@ -23,6 +23,8 @@ export default defineComponent({
   data() {
     return {
       meetup: null,
+      fetchMessage: '',
+      logError: [],
     };
   },
 
@@ -31,27 +33,49 @@ export default defineComponent({
       immediate: true,
 
       handler() {
-        this.meetup = 'Загрузка...';
+        this.meetup = null;
+        this.fetchMessage = 'Загрузка...';
 
         fetchMeetupById(this.meetupId).then(
           (result) => {
             this.meetup = result;
           },
           (error) => {
-            this.meetup = error.message;
+            this.fetchMessage = error.message;
+            this.loggingErrors(this.logError, this.meetupId, error.message);
           }
         );
       }
     },
   },
 
+  methods: {
+    loggingErrors(logArray, meetupId, message) {
+      const index = logArray.findIndex(item => item.meetup.id === meetupId);
+
+      if (index != -1) {
+        logArray[index].meetup.errorMessage = message;
+
+        return;
+      }
+
+      logArray.push({
+        meetup: {
+          id: meetupId,
+          errorMessage: message,
+        }
+      });
+    },
+  },
+
   template: `
     <div class="page-meetup">
       <!-- meetup view -->
-      <MeetupView v-if="typeof meetup === 'object'" :meetup="meetup"/>
+
+      <MeetupView v-if="meetup" :meetup="meetup"/>
 
       <UiContainer v-else>
-        <UiAlert>{{ meetup }}</UiAlert>
+        <UiAlert>{{ fetchMessage }}</UiAlert>
       </UiContainer>
     </div>`,
 });
