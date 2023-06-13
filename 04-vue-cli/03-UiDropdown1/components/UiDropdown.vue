@@ -9,11 +9,11 @@
     </option>
   </select>
 
-  <div class="dropdown" :class="dropdownOpened && 'dropdown_opened'">
+  <div class="dropdown" :class="{ 'dropdown_opened': dropdownOpened }">
     <button
       type="button"
       class="dropdown__toggle"
-      :class="isOptionsIcon && 'dropdown__toggle_icon'"
+      :class="{ 'dropdown__toggle_icon': isOptionsIcon }"
       @click="dropdownOpened = !dropdownOpened"
     >
       <UiIcon
@@ -32,7 +32,7 @@
       <button
         v-for="item in options"
         class="dropdown__item"
-        :class="isOptionsIcon && 'dropdown__item_icon'"
+        :class="{ 'dropdown__item_icon': isOptionsIcon }"
         role="option"
         type="button"
         :value="item.value"
