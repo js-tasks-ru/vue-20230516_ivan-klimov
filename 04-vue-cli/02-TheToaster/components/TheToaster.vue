@@ -3,11 +3,8 @@
     <UiToast
       v-for="(toast, index) in toasts"
       :key="index"
-      :id="toast.id"
       :message="toast.message"
       :type="toast.type"
-      :time-to-remove-ms="toast.timeToRemoveMs"
-      @tostInit="getTostData"
     />
   </div>
 </template>
@@ -30,34 +27,37 @@ export default {
 
   methods: {
     success(message) {
+      const id = Math.random();
+
       this.toasts.push({
-        id: Math.random(),
+        id,
         message,
         type: 'success',
-        timeToRemoveMs: 5000,
       });
+
+      this.removeTost(id, this.toasts);
     },
     error(message) {
+      const id = Math.random();
+
       this.toasts.push({
-        id: Math.random(),
+        id,
         message,
         type: 'error',
-        timeToRemoveMs: 5000,
       });
+
+      this.removeTost(id, this.toasts);
     },
-    getTostData(toastData) {
-      this.removeTost(toastData);
-    },
-    removeTost(toastData) {
+    removeTost(id, toasts) {
       new Promise((resolve) => {
         setTimeout(() => {
-          this.toasts.forEach((item, index) => {
-            if (item.id === toastData.id) {
-              this.toasts.splice(index, 1);
+          toasts.forEach((item, index) => {
+            if (item.id === id) {
+              toasts.splice(index, 1);
               resolve('Done');
             }
           });
-        }, toastData.ms);
+        }, 5000);
       });
     },
   },

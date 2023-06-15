@@ -16,13 +16,7 @@ export default {
     UiIcon,
   },
 
-  emits: ['tostInit'],
-
   props: {
-    id: {
-      type: Number,
-      required: true,
-    },
     message: {
       type: String,
       required: true,
@@ -30,10 +24,6 @@ export default {
     type: {
       type: String,
       required: true,
-    },
-    timeToRemoveMs: {
-      type: Number,
-      default: 2000,
     },
   },
 
@@ -44,16 +34,6 @@ export default {
     toastClass() {
       return typesOfToast[this.type].toastClass;
     },
-  },
-
-  methods: {
-    sendToastData() {
-      this.$emit('tostInit', { id: this.id, ms: this.timeToRemoveMs });
-    },
-  },
-
-  mounted() {
-    this.sendToastData();
   },
 };
 </script>
