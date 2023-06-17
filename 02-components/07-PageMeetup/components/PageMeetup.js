@@ -24,7 +24,7 @@ export default defineComponent({
     return {
       meetup: null,
       fetchMessage: '',
-      logError: [],
+      error: null,
     };
   },
 
@@ -42,29 +42,10 @@ export default defineComponent({
           },
           (error) => {
             this.fetchMessage = error.message;
-            this.loggingErrors(this.logError, this.meetupId, error.message);
+            this.error = error;
           }
         );
       }
-    },
-  },
-
-  methods: {
-    loggingErrors(logArray, meetupId, message) {
-      const index = logArray.findIndex(item => item.meetup.id === meetupId);
-
-      if (index != -1) {
-        logArray[index].meetup.errorMessage = message;
-
-        return;
-      }
-
-      logArray.push({
-        meetup: {
-          id: meetupId,
-          errorMessage: message,
-        }
-      });
     },
   },
 
