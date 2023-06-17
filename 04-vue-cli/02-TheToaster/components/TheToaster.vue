@@ -35,7 +35,7 @@ export default {
         type: 'success',
       });
 
-      this.removeTost(id, this.toasts);
+      this.removeTost(id);
     },
     error(message) {
       const id = Math.random();
@@ -46,17 +46,19 @@ export default {
         type: 'error',
       });
 
-      this.removeTost(id, this.toasts);
+      this.removeTost(id);
     },
-    removeTost(id, toasts) {
+    removeTost(id) {
       new Promise((resolve) => {
         setTimeout(() => {
-          toasts.forEach((item, index) => {
-            if (item.id === id) {
-              toasts.splice(index, 1);
-              resolve('Done');
-            }
-          });
+          const index = this.toasts.findIndex(item => item.id === id);
+
+          if (index !== -1) {
+            this.toasts.splice(index, 1);
+            resolve('Done');
+          } else {
+            resolve('False');
+          }
         }, 5000);
       });
     },
