@@ -1,18 +1,49 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <select
+    v-show="false"
+    :value="modelValue || title"
+    @change="$emit('update:modelValue', $event.target.value)"
+  >
+    <option v-for="item in options" :value="item.value">
+      {{ item.text }}
+    </option>
+  </select>
+
+  <div class="dropdown" :class="{ 'dropdown_opened': dropdownOpened }">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ 'dropdown__toggle_icon': isOptionsIcon }"
+      @click="dropdownOpened = !dropdownOpened"
+    >
+      <UiIcon
+        v-if="selectedType?.icon"
+        :icon="selectedType.icon"
+        class="dropdown__icon"
+      />
+      <span>{{ selectedType?.text || title }}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div
+      v-show="dropdownOpened"
+      class="dropdown__menu"
+      role="listbox"
+    >
+      <button
+        v-for="item in options"
+        class="dropdown__item"
+        :class="{ 'dropdown__item_icon': isOptionsIcon }"
+        role="option"
+        type="button"
+        :value="item.value"
+        @click="$emit('update:modelValue', item.value), dropdownOpened = false"
+      >
+        <UiIcon
+          v-if="item.icon"
+          :icon="item.icon"
+          class="dropdown__icon"
+        />
+        {{ item.text }}
       </button>
     </div>
   </div>
@@ -23,8 +54,34 @@ import UiIcon from './UiIcon.vue';
 
 export default {
   name: 'UiDropdown',
-
+  emits: ['update:modelValue'],
   components: { UiIcon },
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    modelValue: {
+      type: String,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      dropdownOpened: false,
+    };
+  },
+  computed: {
+    isOptionsIcon() {
+      return !!this.options.find(item => 'icon' in item);
+    },
+    selectedType() {
+      return this.options.find(item => item.value === this.modelValue);
+    },
+  },
 };
 </script>
 

@@ -23,11 +23,8 @@ export default defineComponent({
   data() {
     return {
       meetup: null,
-      fetchState: {
-        load: true,
-        succes: false,
-        error: false,
-      },
+      fetchMessage: '',
+      error: null,
     };
   },
 
@@ -36,22 +33,16 @@ export default defineComponent({
       immediate: true,
 
       handler() {
-        this.fetchState.succes = false;
-        this.fetchState.load = true;
-        this.fetchState.error = false;
-        this.meetup = 'Загрузка...';
+        this.meetup = null;
+        this.fetchMessage = 'Загрузка...';
 
         fetchMeetupById(this.meetupId).then(
           (result) => {
-            this.fetchState.load = false;
-            this.fetchState.succes = true;
             this.meetup = result;
           },
           (error) => {
-            this.fetchState.load = false;
-            this.fetchState.succes = false;
-            this.fetchState.error = true;
-            this.meetup = error.message;
+            this.fetchMessage = error.message;
+            this.error = error;
           }
         );
       }
@@ -61,14 +52,11 @@ export default defineComponent({
   template: `
     <div class="page-meetup">
       <!-- meetup view -->
-      <MeetupView v-if="fetchState.succes" :meetup="meetup"/>
 
-      <UiContainer v-if="fetchState.load">
-        <UiAlert>{{ meetup }}</UiAlert>
-      </UiContainer>
+      <MeetupView v-if="meetup" :meetup="meetup"/>
 
-      <UiContainer v-if="fetchState.error">
-        <UiAlert>{{ meetup }}</UiAlert>
+      <UiContainer v-else>
+        <UiAlert>{{ fetchMessage }}</UiAlert>
       </UiContainer>
     </div>`,
 });
