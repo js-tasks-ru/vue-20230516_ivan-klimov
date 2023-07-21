@@ -1,10 +1,34 @@
 <template>
-  <button class="button button_secondary button_block">BUTTON</button>
+  <component
+    :is="tag"
+    :class="['button', `button_${variant}`, {'button_block': block}]"
+    :[type]="'button'"
+  >
+    <slot />
+  </component>
 </template>
 
 <script>
 export default {
   name: 'UiButton',
+  props: {
+    tag: {
+      type: String,
+      default: 'button',
+    },
+    variant: {
+      type: String,
+      default: 'secondary',
+    },
+    block: {
+      type: Boolean,
+    },
+  },
+  computed: {
+    type() {
+      return this.tag === 'button' ? 'type' : false;
+    },
+  },
 };
 </script>
 
