@@ -1,13 +1,37 @@
 <template>
-  <div class="input-group input-group_icon input-group_icon-left input-group_icon-right">
-    <div class="input-group__icon">
-      <img class="icon" alt="icon" />
+  <div :class="{
+      'input-group': true,
+      'input-group_icon': hasSlot,
+      'input-group_icon-left': leftIconSlot,
+      'input-group_icon-right': rightIconSlot
+    }"
+  >
+    <div v-if="leftIconSlot" :class="{
+        'input-group__icon': true,
+        'input-group_icon': leftIconSlot,
+        'input-group_icon-left': leftIconSlot
+      }"
+    >
+      <slot name="left-icon"/>
     </div>
 
-    <input ref="input" class="form-control form-control_rounded form-control_sm" />
+    <component
+      :is="tag"
+      :class="{'form-control': true, 'form-control_rounded': rounded, 'form-control_sm': small}"
+      :value="modelValue"
+      v-bind="$attrs"
+      ref="input"
+      @change="onChange"
+      @input="onInput"
+    ></component>
 
-    <div class="input-group__icon">
-      <img class="icon" alt="icon" />
+    <div v-if="rightIconSlot" :class="{
+        'input-group__icon': true,
+        'input-group_icon': rightIconSlot,
+        'input-group_icon-right': rightIconSlot
+      }"
+    >
+      <slot name="right-icon"/>
     </div>
   </div>
 </template>
@@ -15,6 +39,51 @@
 <script>
 export default {
   name: 'UiInput',
+  inheritAttrs: false,
+  emits: ['update:modelValue'],
+  props: {
+    small: Boolean,
+    rounded: Boolean,
+    multiline: Boolean,
+    modelValue: String,
+    modelModifiers: {
+      default: () => ({}),
+    },
+  },
+  data() {
+    return {
+      hasSlot: false,
+      leftIconSlot: false,
+      rightIconSlot: false,
+    };
+  },
+  computed: {
+    tag() {
+      return this.multiline ? 'textarea' : 'input';
+    },
+  },
+  created() {
+    this.updateIconSlots();
+  },
+  updated() {
+    this.updateIconSlots();
+  },
+  methods: {
+    onChange(event) {
+      if (this.modelModifiers.lazy) this.$emit('update:modelValue', event.target.value);
+    },
+    onInput(event) {
+      if (!this.modelModifiers.lazy) this.$emit('update:modelValue', event.target.value);
+    },
+    updateIconSlots() {
+      this.hasSlot = Boolean(this.$slots['left-icon']) || Boolean(this.$slots['right-icon']);
+      this.leftIconSlot = Boolean(this.$slots['left-icon']);
+      this.rightIconSlot = Boolean(this.$slots['right-icon']);
+    },
+    focus() {
+      this.$refs.input.focus();
+    }
+  },
 };
 </script>
 
