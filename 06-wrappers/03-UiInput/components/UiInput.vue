@@ -1,35 +1,32 @@
 <template>
-  <div :class="{
-      'input-group': true,
+  <div class="input-group" :class="{
       'input-group_icon': hasSlot,
       'input-group_icon-left': leftIconSlot,
       'input-group_icon-right': rightIconSlot
     }"
   >
-    <div v-if="leftIconSlot" :class="{
-        'input-group__icon': true,
-        'input-group_icon': leftIconSlot,
-        'input-group_icon-left': leftIconSlot
-      }"
+    <div
+      v-if="leftIconSlot"
+      class="input-group__icon"
+      :class="{'input-group_icon': leftIconSlot, 'input-group_icon-left': leftIconSlot}"
     >
       <slot name="left-icon"/>
     </div>
 
     <component
       :is="tag"
-      :class="{'form-control': true, 'form-control_rounded': rounded, 'form-control_sm': small}"
+      class="form-control"
+      :class="{'form-control_rounded': rounded, 'form-control_sm': small}"
       :value="modelValue"
       v-bind="$attrs"
       ref="input"
-      @change="onChange"
-      @input="onInput"
+      @[events]="$emit('update:modelValue', $event.target.value)"
     ></component>
 
-    <div v-if="rightIconSlot" :class="{
-        'input-group__icon': true,
-        'input-group_icon': rightIconSlot,
-        'input-group_icon-right': rightIconSlot
-      }"
+    <div
+      v-if="rightIconSlot"
+      class="input-group__icon"
+      :class="{'input-group_icon': rightIconSlot, 'input-group_icon-right': rightIconSlot}"
     >
       <slot name="right-icon"/>
     </div>
@@ -61,20 +58,17 @@ export default {
     tag() {
       return this.multiline ? 'textarea' : 'input';
     },
+    events() {
+      return this.modelModifiers.lazy ? 'change' : 'input';
+    },
   },
   created() {
     this.updateIconSlots();
   },
-  updated() {
+  beforeUpdate() {
     this.updateIconSlots();
   },
   methods: {
-    onChange(event) {
-      if (this.modelModifiers.lazy) this.$emit('update:modelValue', event.target.value);
-    },
-    onInput(event) {
-      if (!this.modelModifiers.lazy) this.$emit('update:modelValue', event.target.value);
-    },
     updateIconSlots() {
       this.hasSlot = Boolean(this.$slots['left-icon']) || Boolean(this.$slots['right-icon']);
       this.leftIconSlot = Boolean(this.$slots['left-icon']);
